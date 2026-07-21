@@ -12,4 +12,18 @@ description, resume pdf and job description.
 */
 interviewRouter.post("/",authMiddleware.authUser,upload.single("resume"),interviewReportControllers.generateInterViewReportController);
 
+/**
+* @route GET /api/interview/report/:interviewId
+* @description get interview report by interviewId.
+* @access private
+*/
+interviewRouter.get("/report/:interviewID",authMiddleware.authUser,interviewReportControllers.getInterviewReportByIdController);
+
+/** 
+* @route GET /api/interview/
+* @description get all interview reports of logged in user.
+* @access private
+*/
+interviewRouter.get("/", authMiddleware.authUser, interviewReportControllers.getAllInterviewReportsController);
+
 module.exports = interviewRouter;
