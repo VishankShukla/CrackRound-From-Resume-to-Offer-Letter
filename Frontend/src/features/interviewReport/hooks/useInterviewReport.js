@@ -1,68 +1,93 @@
-import {getAllInterviewReports,getInterviewReportById,generateInterviewReport} from "../services/interview.api"
+import {
+  getAllInterviewReports,
+  getInterviewReportById,
+  generateInterviewReport,
+} from "../services/interview.api";
 import { useContext, useEffect } from "react";
 import { InterviewReportContext } from "../interviewReport.context";
 import { useParams } from "react-router-dom";
 
-export const useInterviewReport = () => {
-    const context = useContext(InterviewReportContext)
-    const {interviewReportId} = useParams()
-
-    if(!context) {
-        throw new Error("useInterviewReport must be used within an InterviewProvider")
-    }
-
-    const { loading, setLoading, report, setReport, reports, setReports } = context
-
-    const generateReport = async ({jobDescription, selfDescription, resumeFile}) => {
-        setLoading(true)
-        let response = null
-        try{
-            response = await generateInterviewReport({jobDescription, selfDescription, resumeFile})
-            setReport(response.interviewReport)
-        }catch(err){
-            console.error("Error generating Interview Report:",err)
-        }finally{
-            setLoading(false)
-        }
-
-        return response.interviewReport
-    }
-
-    const getReportById = async (interviewReportId) => {
-        setLoading(true)
-        let response = null
-        try{
-            const response = await getInterviewReportById(interviewReportId)
-            setReport(response.interviewReport)
-        }catch(err){
-            console.error("Error generating Interview Report:",err)
-        }finally{
-            setLoading(false)
-        }
-        return response.interviewReport
-    }
-
-    const getReports = async () => {
-        setLoading(true)
-        let response = null
-        try{
-            const response = await getAllInterviewReports()
-            setReports(response.interviewReports)
-        }catch(err){
-            console.error("Error generating Interview Report:",err)
-        }finally{
-            setLoading(false)
-        }
-        return response.interviewReport
-    }
-
-    useEffect(()=>{
-        if(interviewReportId){
-            getReportById(interviewReportId)
-        }else{
-            getReports()
-        }
-    },[interviewReportId])
-
-    return {loading, report, reports, generateReport, getReportById, getReports}
+function extractErrorMessage(err, fallback) {
+  return err?.response?.data?.message || fallback;
 }
+
+export const useInterviewReport = () => {
+  const context = useContext(InterviewReportContext);
+  // Matches the ":interviewId" param defined in App.routes.jsx
+  const { interviewId } = useParams();
+
+  if (!context) {
+    throw new Error("useInterviewReport must be used within an InterviewReportProvider");
+  }
+
+  const {
+    loading, setLoading,
+    report, setReport,
+    reports, setReports,
+    error, setError,
+  } = context;
+
+  const generateReport = async ({ jobDescription, selfDescription, resumeFile }) => {
+    setLoading(true);
+    setError("");
+    try {
+      const response = await generateInterviewReport({
+        jobDescription,
+        selfDescription,
+        resumeFile,
+      });
+      setReport(response.interviewReport);
+      return { success: true, interviewReport: response.interviewReport };
+    } catch (err) {
+      const message = extractErrorMessage(err, "Could not generate the interview report.");
+      setError(message);
+      return { success: false, message };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getReportById = async (id) => {
+    setLoading(true);
+    setError("");
+    setReport(null);
+    try {
+      const response = await getInterviewReportById(id);
+      setReport(response.interviewReport);
+      return { success: true, interviewReport: response.interviewReport };
+    } catch (err) {
+      const message = extractErrorMessage(err, "Could not load this interview report.");
+      setError(message);
+      return { success: false, message };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getReports = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const response = await getAllInterviewReports();
+      setReports(response.interviewReports);
+      return { success: true };
+    } catch (err) {
+      const message = extractErrorMessage(err, "Could not load your interview reports.");
+      setError(message);
+      return { success: false, message };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (interviewId) {
+      getReportById(interviewId);
+    } else {
+      getReports();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [interviewId]);
+
+  return { loading, report, reports, error, generateReport, getReportById, getReports };
+};

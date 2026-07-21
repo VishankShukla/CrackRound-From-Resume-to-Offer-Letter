@@ -3,7 +3,7 @@ import Login from './features/auth/pages/Login';
 import Register from './features/auth/pages/Register';
 import Protected from './features/auth/components/Protected';
 import Home from './features/interviewReport/pages/Home';
-import InterviewReport from './features/interviewReport/pages/interviewReport';
+import InterviewReport from './features/interviewReport/pages/InterviewReport';
 
 export const router = createBrowserRouter([
     {
