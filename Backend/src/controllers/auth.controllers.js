@@ -37,7 +37,11 @@ async function registerUser(req, res) {
       { expiresIn: "1d" },
     );
 
-    res.cookie("token", token);
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
 
     return res.status(201).json({
       message: "User Register Successfully",
@@ -66,16 +70,16 @@ async function loginUser(req, res) {
     const user = await userModel.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({
-        message: "Invaild Email",
+      return res.status(401).json({
+        message: "Invalid email or password",
       });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      return res.status(400).json({
-        message: "Invaild Password",
+      return res.status(401).json({
+        message: "Invalid email or password",
       });
     }
 
@@ -85,10 +89,13 @@ async function loginUser(req, res) {
       { expiresIn: "1d" },
     );
 
-    res.cookie("token", token);
-    
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
 
-    return res.status(201).json({
+    return res.status(200).json({
       message: "User login Successfully",
       user: {
         username: user.username,
@@ -108,7 +115,10 @@ async function logoutUser(req, res) {
     if (token) {
       await tokenBlacklistModel.create({ token });
     }
-    res.clearCookie("token");
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    });
 
     return res.status(200).json({
       message: "User Logout Successfully",
@@ -123,6 +133,12 @@ async function logoutUser(req, res) {
 async function getmeUser(req, res) {
   try {
     const user = await userModel.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
 
     return res.status(200).json({
       message: "User Detail Fetched Successfully",

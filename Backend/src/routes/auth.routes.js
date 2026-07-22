@@ -19,11 +19,11 @@ authRouter.post('/register',authControllers.registerUser);
 authRouter.post('/login',authControllers.loginUser);
 
 /**
-* @route GET /api/auth/logout
+* @route POST /api/auth/logout
 * @description clear token from user cookie and add the token in blacklist
 * @access public
 */
-authRouter.get('/logout',authControllers.logoutUser);
+authRouter.post('/logout',authControllers.logoutUser);
 
 /**
 * @route GET /api/auth/get-me
