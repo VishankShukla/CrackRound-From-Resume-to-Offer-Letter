@@ -40,8 +40,13 @@ const Register = () => {
     <main className="min-h-screen bg-zinc-950 flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <div className="inline-flex w-10 h-10 rounded-lg bg-indigo-600 items-center justify-center text-white font-bold mb-4">
-            C
+          <div className="mt-2">
+            <div className="inline-flex w-13 h-10 rounded-lg bg-indigo-600 items-center justify-center text-white font-bold mb-4">
+            Crack
+          </div>
+          <div className="inline-flex w-15 h-10 rounded-lg items-center justify-center text-white font-bold mb-4">
+            Round
+          </div>
           </div>
           <h1 className="text-2xl font-semibold text-white">Create your account</h1>
           <p className="mt-2 text-sm text-zinc-400">

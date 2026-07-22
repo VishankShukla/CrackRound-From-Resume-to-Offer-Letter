@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useInterviewReport } from "../hooks/useInterviewReport";
 import Navbar from "../../../components/Navbar";
+import { useParams } from "react-router-dom";
 
 const NAV_ITEMS = [
   { id: "technical", label: "Technical questions" },
@@ -67,14 +68,15 @@ const RoadMapDay = ({ day }) => (
 
 const InterviewReport = () => {
   const [activeNav, setActiveNav] = useState("technical");
-  const { report, loading, error } = useInterviewReport();
+  const { report, loading, error, getResumePdf } = useInterviewReport();
+  const {interviewId} = useParams()
 
   if (loading) {
     return (
       <div className="min-h-screen bg-zinc-950">
         <Navbar />
         <div className="flex items-center justify-center py-24">
-          <p className="text-zinc-400 text-sm">Loading your interview plan…</p>
+          <p className="text-zinc-400 text-sm">Loading…</p>
         </div>
       </div>
     );
@@ -126,6 +128,20 @@ const InterviewReport = () => {
                 </button>
               ))}
             </div>
+
+            {report.resume && (
+              <>
+                <div className="h-px bg-zinc-800 my-4" />
+                <button
+                onClick={()=>{
+                  getResumePdf(interviewId)
+                }}
+                  className="  bg-indigo-600 active:scale-95 w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm border border-zinc-700 text-zinc-300"
+                >
+                  Download resume
+                </button>
+              </>
+            )}
           </aside>
 
           {/* Main Content */}
