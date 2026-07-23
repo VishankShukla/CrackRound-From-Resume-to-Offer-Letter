@@ -155,8 +155,8 @@ async function generateResumePdf({ resume, selfDescription, jobDescription }) {
 
 async function generatePdfFromHtml(htmlContent) {
     const browser = await puppeteer.launch()
-    const pagee = await browser.newPage();
-    await pagee.setContent(htmlContent,{waitUntil:'networkidle0'})
+    const page = await browser.newPage();
+    await page.setContent(htmlContent,{waitUntil:'networkidle0'})
 
     const pdfBuffer = await page.pdf({
         format: "A4", margin: {
