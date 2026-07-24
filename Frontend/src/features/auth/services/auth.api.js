@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://crackround-from-resume-to-offer-letter.onrender.com/",
+  baseURL: "https://crackround-from-resume-to-offer-letter.onrender.com",
   withCredentials: true,
 });
 
